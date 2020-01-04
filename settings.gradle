@@ -1,0 +1,2 @@
+rootProject.name = 'pcc-long-running-test'
+include 'client','client-cq','server'

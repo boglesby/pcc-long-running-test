@@ -1,0 +1,80 @@
+buildscript {
+    ext {
+        springBootVersion = '2.2.2.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+plugins {
+    id 'io.franzbecker.gradle-lombok' version '1.11'
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url 'https://repo.spring.io/libs-release' }
+        maven { url 'https://repo.spring.io/libs-milestone' }
+        maven { url 'https://repo.spring.io/libs-snapshot' }
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    sourceCompatibility = 1.8
+
+    group = 'example.cloudcache'
+    version = '0.0.1-SNAPSHOT'
+
+    configurations {
+        provided
+        compile.extendsFrom provided
+    }
+
+
+    task copyDependancies(type: Copy) {
+        into "$buildDir/dependancies"
+        from(configurations.compile - configurations.provided)
+    }
+
+    jar {
+        dependsOn copyDependancies
+    }
+}
+
+project(':client') {
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    dependencies {
+        compile 'org.projectlombok:lombok:1.18.8'
+        annotationProcessor 'org.projectlombok:lombok:1.18.10'
+        compile 'org.springframework.geode:spring-geode-starter:1.2.2.RELEASE'
+        compile 'org.springframework.geode:spring-geode-starter-actuator:1.2.2.RELEASE'
+        compile "org.springframework.boot:spring-boot-starter-web:2.2.2.RELEASE"
+    }
+}
+
+project(':client-cq') {
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    dependencies {
+        compile 'org.projectlombok:lombok:1.18.8'
+        annotationProcessor 'org.projectlombok:lombok:1.18.10'
+        compile 'org.springframework.geode:spring-geode-starter:1.2.2.RELEASE'
+        compile 'org.springframework.geode:spring-geode-starter-actuator:1.2.2.RELEASE'
+        compile "org.springframework.boot:spring-boot-starter-web:2.2.2.RELEASE"
+    }
+}
+
+project(':server') {
+    dependencies {
+        provided 'io.pivotal.gemfire:geode-core:9.8.3'
+    }
+}
