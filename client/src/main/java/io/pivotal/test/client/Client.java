@@ -1,9 +1,11 @@
 package io.pivotal.test.client;
 
 import io.pivotal.test.client.domain.Trade;
+import io.pivotal.test.client.metrics.OperationMeterBinder;
+import io.pivotal.test.client.metrics.ServerMeterBuilder;
 import io.pivotal.test.client.service.TradeService;
-import org.apache.geode.internal.logging.LogService;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -14,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.gemfire.config.annotation.EnableEntityDefinedRegions;
 import org.springframework.data.gemfire.config.annotation.EnableStatistics;
 import org.springframework.geode.boot.autoconfigure.ContinuousQueryAutoConfiguration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,9 +27,10 @@ import static io.pivotal.test.client.Constants.*;
 @SpringBootApplication(exclude = ContinuousQueryAutoConfiguration.class) // disable subscriptions
 @EnableEntityDefinedRegions(basePackageClasses = Trade.class)
 @EnableStatistics
+@EnableScheduling
 public class Client {
 
-  private static final Logger logger = LogService.getLogger();
+  private static final Logger logger = LoggerFactory.getLogger(Client.class);
 
   @Autowired
   private TradeService service;
@@ -99,6 +103,16 @@ public class Client {
         }
       }
     };
+  }
+
+  @Bean
+  OperationMeterBinder getOperationMeterBuilder(){
+    return new OperationMeterBinder();
+  }
+
+  @Bean
+  ServerMeterBuilder getServerMeterBuilder() {
+    return new ServerMeterBuilder();
   }
 
 //  @Bean

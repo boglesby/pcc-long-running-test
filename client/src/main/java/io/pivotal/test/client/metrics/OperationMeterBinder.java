@@ -6,7 +6,7 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import io.pivotal.test.client.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class OperationMetricsBinder implements MeterBinder {
+public class OperationMeterBinder implements MeterBinder {
 
   @Autowired
   private TradeService service;

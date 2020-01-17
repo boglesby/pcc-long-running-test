@@ -3,7 +3,6 @@ package io.pivotal.test.client.function;
 import org.apache.geode.cache.execute.FunctionException;
 import org.apache.geode.cache.execute.ResultCollector;
 import org.apache.geode.distributed.DistributedMember;
-import org.apache.geode.internal.logging.LogService;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -13,9 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Component("adminResultCollector")
-public class AdminFunctionsResultCollector implements ResultCollector<Map, Set> {
+public class AdminFunctionsResultCollector implements ResultCollector<Object, Set> {
 
-  private Map<String,Map> results = new ConcurrentHashMap<>();
+  private Map results = new ConcurrentHashMap<>();
 
   @Override
   public Set getResult() throws FunctionException {
@@ -51,15 +50,12 @@ public class AdminFunctionsResultCollector implements ResultCollector<Map, Set> 
   }
 
   @Override
-  public void addResult(DistributedMember memberID, Map result) {
-    //LogService.getLogger().warn("XXX AdminFunctionsResultCollector.addResult memberID=" + memberID + "; result=" + result);
-    this.results.put(memberID.toString(), result);
+  public void addResult(DistributedMember memberID, Object result) {
+    this.results.put(memberID.getName(), result);
   }
 
   @Override
-  public void endResults() {
-
-  }
+  public void endResults() {}
 
   @Override
   public void clearResults() {

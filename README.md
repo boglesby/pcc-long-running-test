@@ -50,7 +50,7 @@ Pushing from manifest to org pivot-boglesby / space playground as boglesby@pivot
 Using manifest file client/manifest.yml
 Getting app info...
 Updating app with these attributes...
-  name:                sdgApp
+  name:                clientApp
   path:                /Users/boglesby/Dev/Tests/spring-boot/pcc-long-running-test/client/build/libs/client-0.0.1-SNAPSHOT.jar
   buildpacks:
     https://github.com/cloudfoundry/java-buildpack.git
@@ -63,9 +63,9 @@ Updating app with these attributes...
   services:
     pccService
   routes:
-    sdgapp.apps.pcfone.io
+    clientapp.apps.pcfone.io
 
-Updating app sdgApp...
+Updating app clientApp...
 Mapping routes...
 Comparing local files to remote cache...
 Packaging files to upload...
@@ -106,10 +106,10 @@ Staging app and tracing logs...
 
 Waiting for app to start...
 
-name:                sdgApp
+name:                clientApp
 requested state:     started
 isolation segment:   iso-01
-routes:              sdgapp.apps.pcfone.io
+routes:              clientapp.apps.pcfone.io
 last uploaded:       Fri 03 Jan 16:02:05 PST 2020
 stack:               cflinuxfs3
 buildpacks:          https://github.com/cloudfoundry/java-buildpack.git
@@ -230,7 +230,7 @@ start command:   JAVA_OPTS="-agentpath:$PWD/.java-buildpack/open_jdk_jre/bin/jvm
 Get the latest client application log messages using the **cf logs** command like:
 
 ```
-cf logs sdgApp --recent
+cf logs clientApp --recent
 ...
    2019-12-19T16:20:09.95-0800 [APP/PROC/WEB/0] OUT 2019-12-20 00:20:09.955  INFO 33 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
    2019-12-19T16:20:09.96-0800 [APP/PROC/WEB/0] OUT 2019-12-20 00:20:09.960  INFO 33 --- [           main] io.pivotal.test.client.Client            : Started Client in 7.316 seconds (JVM running for 8.365)
@@ -241,8 +241,8 @@ cf logs sdgApp --recent
 Tail the client application log messages using the **cf logs** command like:
 
 ```
-cf logs sdgApp
-Retrieving logs for app sdgApp in org pivot-boglesby / space playground as boglesby@pivotal.io...
+cf logs clientApp
+Retrieving logs for app clientApp in org pivot-boglesby / space playground as boglesby@pivotal.io...
 ```
 #### Get CQ Client Application Logs
 ##### Get latest Logs
@@ -260,7 +260,7 @@ Tail the CQ client application log messages using the **cf logs** command like:
 
 ```
 cf logs clientCqApp
-Retrieving logs for app sdgApp in org pivot-boglesby / space playground as boglesby@pivotal.io...
+Retrieving logs for app clientApp in org pivot-boglesby / space playground as boglesby@pivotal.io...
 ```
 ## Run Clients
 ### PCFOne
@@ -279,9 +279,7 @@ name          requested state   instances   memory   disk   urls
 sdgApp        started           1/1         768M     1G     sdgapp.apps.seoul.cf-app.com
 clientCqApp   started           1/1         768M     1G     clientcqapp.apps.seoul.cf-app.com
 ```
-
-```
-curl -k -X POST https://sdgapp.apps.pcfone.io/trades/put/10/1024
+curl -k -X POST https://clientapp.apps.pcfone.io/trades/put/10/1024
 {"operation":"put","status":"SUCCESS","completionTime":191}
 ```
 The application will log messages like:
@@ -304,7 +302,7 @@ The application will log messages like:
 Run the get command using **curl** like:
 
 ```
-curl -k https://sdgapp.apps.pcfone.io/trades/get/10
+curl -k https://clientapp.apps.pcfone.io/trades/get/10
 {"operation":"get","status":"SUCCESS","completionTime":55}
 ```
 The application will log messages like:
@@ -327,7 +325,7 @@ The application will log messages like:
 Run the destroy command using **curl** like:
 
 ```
-curl -k -X DELETE https://sdgapp.apps.pcfone.io/trades/destroy/10
+curl -k -X DELETE https://clientapp.apps.pcfone.io/trades/destroy/10
 {"operation":"destroy","status":"SUCCESS","completionTime":63}
 ```
 The application will log messages like:
@@ -350,7 +348,7 @@ The application will log messages like:
 Run the query by cusip command using **curl** like:
 
 ```
-curl -k https://sdgapp.apps.pcfone.io/trades/querybycusip/10
+curl -k https://clientapp.apps.pcfone.io/trades/querybycusip/10
 ```
 The application will log messages like:
 
@@ -372,7 +370,7 @@ The application will log messages like:
 Run the function update command using **curl** like:
 
 ```
-curl -k -X POST https://sdgapp.apps.pcfone.io/trades/functionupdate/10
+curl -k -X POST https://clientapp.apps.pcfone.io/trades/functionupdate/10
 {"operation":"functionupdate","status":"SUCCESS","completionTime":65}
 ```
 The application will log messages like:
@@ -395,7 +393,7 @@ The application will log messages like:
 Run the function update command using **curl** like:
 
 ```
-curl -k -X POST https://sdgapp.apps.pcfone.io/trades/putforever/10/1024
+curl -k -X POST https://clientapp.apps.pcfone.io/trades/putforever/10/1024
 ```
 The application will log messages like:
 
@@ -407,7 +405,7 @@ The application will log messages like:
 Run the function update command using **curl** like:
 
 ```
-curl -k https://sdgapp.apps.pcfone.io/trades/getforever/10
+curl -k https://clientapp.apps.pcfone.io/trades/getforever/10
 ```
 The application will log messages like:
 
@@ -419,7 +417,7 @@ The application will log messages like:
 Run the function update command using **curl** like:
 
 ```
-curl -k -X DELETE https://sdgapp.apps.pcfone.io/trades/destroyforever/10
+curl -k -X DELETE https://clientapp.apps.pcfone.io/trades/destroyforever/10
 ```
 The application will log messages like:
 
@@ -431,7 +429,7 @@ The application will log messages like:
 Run the function update command using **curl** like:
 
 ```
-curl -k https://sdgapp.apps.pcfone.io/trades/querybycusipforever
+curl -k https://clientapp.apps.pcfone.io/trades/querybycusipforever
 ```
 The application will log messages like:
 
@@ -443,7 +441,7 @@ The application will log messages like:
 Run the function update command using **curl** like:
 
 ```
-curl -k -X POST https://sdgapp.apps.pcfone.io/trades/functionupdateforever/10
+curl -k -X POST https://clientapp.apps.pcfone.io/trades/functionupdateforever/10
 ```
 The application will log messages like:
 
@@ -455,7 +453,7 @@ The application will log messages like:
 Run the multi-threaded put forever command using **curl** like:
 
 ```
-curl -k -X POST https://sdgapp.apps.pcfone.io/trades/putforever/10/1024/5
+curl -k -X POST https://clientapp.apps.pcfone.io/trades/putforever/10/1024/5
 ```
 The application will log messages like:
 
@@ -467,7 +465,7 @@ The application will log messages like:
 Run the multi-threaded get forever command using **curl** like:
 
 ```
-curl -k https://sdgapp.apps.pcfone.io/trades/getforever/10/5
+curl -k https://clientapp.apps.pcfone.io/trades/getforever/10/5
 ```
 The application will log messages like:
 
@@ -478,7 +476,7 @@ The application will log messages like:
 Run the multi-threaded destroy forever command using **curl** like:
 
 ```
-curl -k -X DELETE https://sdgapp.apps.pcfone.io/trades/destroyforever/10/5
+curl -k -X DELETE https://clientapp.apps.pcfone.io/trades/destroyforever/10/5
 ```
 The application will log messages like:
 
@@ -489,7 +487,7 @@ The application will log messages like:
 Run the multi-threaded query by cusip forever command using **curl** like:
 
 ```
-curl -k https://sdgapp.apps.pcfone.io/trades/querybycusipforever/5
+curl -k https://clientapp.apps.pcfone.io/trades/querybycusipforever/5
 ```
 The application will log messages like:
 
@@ -500,7 +498,7 @@ The application will log messages like:
 Run the multi-threaded function update command using **curl** like:
 
 ```
-curl -k -X POST https://sdgapp.apps.pcfone.io/trades/functionupdateforever/10/5
+curl -k -X POST https://clientapp.apps.pcfone.io/trades/functionupdateforever/10/5
 ```
 The application will log messages like:
 
@@ -511,7 +509,7 @@ The application will log messages like:
 Run the get one command using **curl** like:
 
 ```
-curl -k https://sdgapp.apps.pcfone.io/trades/getone/0
+curl -k https://clientapp.apps.pcfone.io/trades/getone/0
 ```
 The application will log messages like:
 
@@ -521,7 +519,7 @@ The application will log messages like:
 Run the query one by cusip command using **curl** like:
 
 ```
-curl -k https://sdgapp.apps.pcfone.io/trades/queryonebycusip/AAPL
+curl -k https://clientapp.apps.pcfone.io/trades/queryonebycusip/AAPL
 ```
 The application will log messages like:
 
@@ -531,7 +529,7 @@ The application will log messages like:
 Run the test command using **curl** like:
 
 ```
-curl -k -X POST https://sdgapp.apps.pcfone.io/trades/starttest/100000/1024
+curl -k -X POST https://clientapp.apps.pcfone.io/trades/starttest/100000/1024
 [{"operation":"putforever","status":"SUCCESS","completionTime":0},{"operation":"getforever","status":"SUCCESS","completionTime":0},{"operation":"querybycusipforever","status":"SUCCESS","completionTime":0},{"operation":"functionupdateforever","status":"SUCCESS","completionTime":0}]
 ```
 The application will log messages like:
@@ -559,7 +557,7 @@ The application will log messages like:
 Run the stop operations command using **curl** like:
 
 ```
-curl -k -X POST https://sdgapp.apps.pcfone.io/trades/stopoperations
+curl -k -X POST https://clientapp.apps.pcfone.io/trades/stopoperations
 ```
 The application will log messages like:
 

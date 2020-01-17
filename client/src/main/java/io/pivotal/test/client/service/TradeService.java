@@ -2,13 +2,10 @@ package io.pivotal.test.client.service;
 
 import io.pivotal.test.client.domain.CusipHelper;
 import io.pivotal.test.client.domain.Trade;
-import io.pivotal.test.client.function.AdminFunctions;
 import io.pivotal.test.client.function.TradeFunctions;
-import io.pivotal.test.client.metrics.Metrics;
-import io.pivotal.test.client.metrics.MetricsHelper;
 import io.pivotal.test.client.repository.TradeRepository;
-import org.apache.geode.internal.logging.LogService;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +13,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.pivotal.test.client.Constants.*;
@@ -33,9 +28,6 @@ public class TradeService {
   @Autowired
   private TradeFunctions tradeFunctions;
 
-  @Autowired
-  private AdminFunctions adminFunctions;
-
   private final AtomicInteger putOperations = new AtomicInteger();
 
   private final AtomicInteger getOperations = new AtomicInteger();
@@ -48,7 +40,7 @@ public class TradeService {
 
   private volatile boolean continueOperations;
 
-  private static final Logger logger = LogService.getLogger();
+  private static final Logger logger = LoggerFactory.getLogger(TradeService.class);
 
   private static final Random RANDOM = new Random();
 
@@ -237,6 +229,7 @@ public class TradeService {
   public OperationResponse putForever(final int numEntries, final int entrySize, Optional<Integer> numThreads) {
     for (int i=0; i<numThreads.orElse(1); i++) {
       Thread thread = new Thread(() -> putForever(numEntries, entrySize));
+      thread.setDaemon(true);
       thread.start();
     }
     return new OperationResponse(PUT_FOREVER, Status.SUCCESS, 0);
@@ -245,6 +238,7 @@ public class TradeService {
   public OperationResponse getForever(final int numEntries, Optional<Integer> numThreads) {
     for (int i=0; i<numThreads.orElse(1); i++) {
       Thread thread = new Thread(() -> getForever(numEntries));
+      thread.setDaemon(true);
       thread.start();
     }
     return new OperationResponse(GET_FOREVER, Status.SUCCESS, 0);
@@ -253,6 +247,7 @@ public class TradeService {
   public OperationResponse destroyForever(final int numEntries, Optional<Integer> numThreads) {
     for (int i=0; i<numThreads.orElse(1); i++) {
       Thread thread = new Thread(() -> destroyForever(numEntries));
+      thread.setDaemon(true);
       thread.start();
     }
     return new OperationResponse(DESTROY_FOREVER, Status.SUCCESS, 0);
@@ -261,6 +256,7 @@ public class TradeService {
   public OperationResponse queryByCusipForever(Optional<Integer> numThreads) {
     for (int i=0; i<numThreads.orElse(1); i++) {
       Thread thread = new Thread(() -> queryByCusipForever());
+      thread.setDaemon(true);
       thread.start();
     }
     return new OperationResponse(QUERY_BY_CUSIP_FOREVER, Status.SUCCESS, 0);
@@ -269,6 +265,7 @@ public class TradeService {
   public OperationResponse functionUpdateForever(final int numEntries, Optional<Integer> numThreads) {
     for (int i=0; i<numThreads.orElse(1); i++) {
       Thread thread = new Thread(() -> functionUpdateForever(numEntries));
+      thread.setDaemon(true);
       thread.start();
     }
     return new OperationResponse(FUNCTION_UPDATE_FOREVER, Status.SUCCESS, 0);
@@ -286,10 +283,6 @@ public class TradeService {
     this.continueOperations = false;
     logger.info("Stopping operations");
     return new OperationResponse(STOP_OPERATIONS, Status.SUCCESS, 0);
-  }
-
-  public Object getMetrics(String type) {
-    return new Metrics(getClientMetrics(type), getServerMetrics(type));
   }
 
   private void put(int index, int entrySize, boolean log) {
@@ -329,38 +322,27 @@ public class TradeService {
     return this.tradeFunctions.updateTrade(Collections.singleton(String.valueOf(index)), RANDOM.nextInt(100), new BigDecimal(BigInteger.valueOf(RANDOM.nextInt(100000)), 2));
   }
 
-  private Map getServerMetrics(String type) {
-    Map serverMetrics = null;
-    if (type.equals("all") || type.equals("server")) {
-      Iterable serverMetricsIter = (Iterable) this.adminFunctions.getMetrics();
-      serverMetrics = (Map) serverMetricsIter.iterator().next();
-    }
-    return serverMetrics;
-  }
-
-  private Map getClientMetrics(String type) {
-    Map clientMetrics = null;
-    if (type.equals("all") || type.equals("client")) {
-      clientMetrics = new TreeMap();
-      addOperationMetrics(clientMetrics);
-      MetricsHelper.addOSMetrics(clientMetrics);
-      MetricsHelper.addGCMetrics(clientMetrics);
-      MetricsHelper.addMemoryMetrics(clientMetrics);
-    }
-    return clientMetrics;
-  }
-
-  private void addOperationMetrics(Map clientMetrics) {
-    Map operationMetrics = new TreeMap();
-    clientMetrics.put("operations", operationMetrics);
-    operationMetrics.put("puts", this.putOperations.get());
-    operationMetrics.put("gets", this.getOperations.get());
-    operationMetrics.put("destroys", this.destroyOperations.get());
-    operationMetrics.put("cusipQueries", this.queryByCusipOperations.get());
-    operationMetrics.put("functionUpdates", this.functionUpdateOperations.get());
-  }
-
   private boolean continueOperations() {
     return this.continueOperations;
+  }
+
+  public int getGetOperations() {
+    return this.getOperations.get();
+  }
+
+  public int getPutOperations() {
+    return this.putOperations.get();
+  }
+
+  public int getDestroyOperations() {
+    return this.destroyOperations.get();
+  }
+
+  public int getQueryByCusipOperations() {
+    return this.queryByCusipOperations.get();
+  }
+
+  public int getFunctionUpdateOperations() {
+    return this.functionUpdateOperations.get();
   }
 }

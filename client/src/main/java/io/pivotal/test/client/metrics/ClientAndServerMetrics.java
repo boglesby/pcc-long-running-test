@@ -7,13 +7,13 @@ import java.util.Map;
 
 @Getter
 @ToString
-public class Metrics {
+public class ClientAndServerMetrics {
 
   private Map clientMetrics;
 
   private Map serverMetrics;
 
-  public Metrics(Map clientMetrics, Map serverMetrics) {
+  public ClientAndServerMetrics(Map clientMetrics, Map serverMetrics) {
     this.clientMetrics = clientMetrics;
     this.serverMetrics = serverMetrics;
   }

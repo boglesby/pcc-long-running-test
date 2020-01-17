@@ -58,6 +58,7 @@ project(':client') {
         compile 'org.springframework.geode:spring-geode-starter:1.2.2.RELEASE'
         compile 'org.springframework.geode:spring-geode-starter-actuator:1.2.2.RELEASE'
         compile "org.springframework.boot:spring-boot-starter-web:2.2.2.RELEASE"
+        compile group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.3.2'
     }
 }
 
@@ -70,11 +71,14 @@ project(':client-cq') {
         compile 'org.springframework.geode:spring-geode-starter:1.2.2.RELEASE'
         compile 'org.springframework.geode:spring-geode-starter-actuator:1.2.2.RELEASE'
         compile "org.springframework.boot:spring-boot-starter-web:2.2.2.RELEASE"
+        compile group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.3.2'
     }
 }
 
 project(':server') {
     dependencies {
+        compile 'org.projectlombok:lombok:1.18.8'
+        annotationProcessor 'org.projectlombok:lombok:1.18.10'
         provided 'io.pivotal.gemfire:geode-core:9.8.3'
     }
 }

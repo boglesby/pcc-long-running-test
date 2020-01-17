@@ -1,4 +1,9 @@
 package io.pivotal.test.client.metrics;
 
-public class MetricsHandlerFunction {
+import io.pivotal.test.metrics.Metric;
+
+@FunctionalInterface
+public interface MetricsHandlerFunction {
+
+  void process(String serverName, Metric metric);
 }

@@ -1,38 +1,45 @@
-package io.pivotal.test.client.metrics;
+package io.pivotal.test.metrics;
 
 import org.apache.geode.StatisticDescriptor;
 import org.apache.geode.Statistics;
 import org.apache.geode.StatisticsType;
-import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.distributed.internal.InternalDistributedSystem;
-import org.apache.geode.internal.statistics.platform.LinuxSystemStats;
-import org.apache.geode.management.ManagementService;
-import org.apache.geode.management.OSMetrics;
-import org.apache.geode.management.internal.beans.MemberMBean;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class MetricsHelper {
 
-  public static void addOSMetrics(Map allMetrics) {
-    InternalDistributedSystem system = (InternalDistributedSystem) CacheFactory.getAnyInstance().getDistributedSystem();
+  private static final InternalDistributedSystem system =
+    (InternalDistributedSystem) CacheFactory.getAnyInstance().getDistributedSystem();
 
+  private static final String[] typeNames = new String[] {
+    "LinuxSystemStats", "VMStats"
+  };
+
+  private static final List<StatisticsType> types =
+    Arrays.stream(typeNames).map(name -> system.findType(name)).collect(Collectors.toList());
+
+  public static void addStatisticsMetrics(Map allMetrics) {
+    for (StatisticsType type : types) {
+      addMetrics(allMetrics, type);
+    }
+  }
+
+  public static void addMetrics(Map allMetrics, StatisticsType type) {
     Map osMetrics = new TreeMap();
-    allMetrics.put("os", osMetrics);
-
-    // If the linux system statistics exist, add them to the os metrics map.
-    // Otherwise add the available stats from the osmetrics.
-    Statistics[] systemStatisticsArr = system.findStatisticsByType(LinuxSystemStats.getType());
+    allMetrics.put(type.getName(), osMetrics);
+    Statistics[] systemStatisticsArr = system.findStatisticsByType(type);
     if (systemStatisticsArr.length > 0) {
       Statistics systemStatistics = systemStatisticsArr[0];
-      StatisticsType type = systemStatistics.getType();
       for (StatisticDescriptor descriptor : type.getStatistics()) {
         String statName = descriptor.getName();
         Number statValue = systemStatistics.get(statName);

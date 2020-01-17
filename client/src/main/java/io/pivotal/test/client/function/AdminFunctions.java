@@ -10,7 +10,10 @@ import java.util.Map;
 @OnRegion(region = "Trades", resultCollector = "adminResultCollector")
 public interface AdminFunctions {
 
-  @FunctionId("GetMetricsFunction")
-  //Map<String,Map<String,Map<String,?>>> getMetrics(String type);
-  Object getMetrics();
+  @FunctionId("GetMetricsMapFunction")
+    //Map<String,Map<String,Map<String,?>>> getMetrics(String type);
+  Object getMetricsMap();
+
+  @FunctionId("GetMetricsListFunction")
+  Object getMetricsList();
 }

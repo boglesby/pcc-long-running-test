@@ -128,10 +128,4 @@ public class TradeController {
   public OperationResponse stopOperations() {
     return this.service.stopOperations();
   }
-
-  @GetMapping(METRICS_PATH + METRICS_TYPE_PARAMETER)
-  @ResponseStatus(HttpStatus.OK)
-  public Object getMetrics(@PathVariable String type) {
-    return this.service.getMetrics(type);
-  }
 }
