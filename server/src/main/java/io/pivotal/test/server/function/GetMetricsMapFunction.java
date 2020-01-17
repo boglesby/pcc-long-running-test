@@ -1,6 +1,6 @@
 package io.pivotal.test.server.function;
 
-import io.pivotal.test.server.metrics.MetricsHelper;
+import io.pivotal.test.metrics.MetricsHelper;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 
@@ -13,6 +13,7 @@ public class GetMetricsFunction implements Function {
   public void execute(FunctionContext context) {
     Map allMetrics = new TreeMap();
     MetricsHelper.addOSMetrics(allMetrics);
+    MetricsHelper.addVMMetrics(allMetrics);
     MetricsHelper.addGCMetrics(allMetrics);
     MetricsHelper.addMemoryMetrics(allMetrics);
     context.getResultSender().lastResult(allMetrics);

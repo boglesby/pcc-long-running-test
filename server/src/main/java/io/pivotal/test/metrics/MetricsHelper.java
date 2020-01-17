@@ -68,6 +68,14 @@ public class MetricsHelper {
     }
   }
 
+  public static void addGCMetrics(List<Metric> allMetrics) {
+    List<GarbageCollectorMXBean> gcBeans = ManagementFactory.getGarbageCollectorMXBeans();
+    for (GarbageCollectorMXBean gcBean : gcBeans) {
+      allMetrics.add(new Metric(gcBean.getName() + "_collections", gcBean.getCollectionCount(), true));
+      allMetrics.add(new Metric(gcBean.getName() + "_collectionTime", gcBean.getCollectionTime(), true));
+    }
+  }
+
   public static void addMemoryMetrics(Map allMetrics) {
     Map memoryMetrics = new TreeMap();
     allMetrics.put("memory", memoryMetrics);
