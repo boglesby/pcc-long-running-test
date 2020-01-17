@@ -1,0 +1,110 @@
+// Create your PCF Deployment via PCFOne or according to this document for a cf toolsmith pooled or customer pcf environment
+https://docs.google.com/document/d/1zy0w0iiEAWtBvNpGGrbuQ8NqgJJT4GJxnJ07WDr5YD4/edit#
+
+// login to your PCF deployment (for this example, seoul)
+$ cf login --skip-ssl-validation -a https://api.sys.seoul.cf-app.com 
+
+// prompted for Email (simply admin) + Password from PAS Tile > Credentials Tab => UAA Admin Credentials
+Email> admin
+Password> WsTijPw3_AD53PtcrlQd1ar-oKxeTrTC
+
+// create and login to space
+$ cf create-space SPACE-NAME
+$ cf create-space mySpace
+
+$ cf target -s SPACE-NAME
+$ cf target -s mySpace
+
+// Create the PCC service instance (your GemFire cluster):
+// The PLAN-NAME is one of the plans from your configured PCC tile. You can list your available plans on the command line with:
+$ cf marketplace -s p-cloudcache
+
+// output from marketplace command
+service plan      description        free or paid
+dev-plan          Plan Description   free
+small-footprint   Plan Description   free
+
+$ cf create-service SERVICE-NAME PLAN-NAME SERVICE-INSTANCE-NAME
+$ cf create-service p-cloudcache dev-plan pccService
+or
+$ cf create-service p-cloudcache small-footprint pccService
+
+// You can check on the progress of the create with
+$ cf service SERVICE-INSTANCE-NAME
+$ cf service pccService
+
+// Create service-key
+$ cf create-service-key SERVICE_INSTANCE SERVICE_KEY
+$ cf create-service-key pccService pccServiceKey
+
+// To find any existing key
+$ cf service-keys SERVICE-INSTANCE-NAME
+$ cf service-keys pccService 
+
+// output shows our service key (helpful if you are coming back to your deployment)
+pccServiceKey
+
+// get gfsh connect cmd and other details from cf env
+$ cf service-key pccService pccServiceKey
+
+// output from cf service-key command
+{
+ "distributed_system_id": "0",
+ "gfsh_login_string": "connect --url=https://cloudcache-740fbd64-f250-45d2-8162-e73ce0a4c825.sys.seoul.cf-app.com/gemfire/v1 --user=cluster_operator_83ZGNx2UW0QfjSVOrW9w --password=iqiN05MzAaO52WtiMlHcQw --skip-ssl-validation",
+ "locators": [
+  "20cd56e5-c1fe-4f6e-8f6a-354ff2516f03.locator-server.seoul-services-subnet.service-instance-740fbd64-f250-45d2-8162-e73ce0a4c825.bosh[55221]"
+ ],
+ "remote_cluster_info": {
+  "recursors": {
+   "seoul-services-subnet.service-instance-740fbd64-f250-45d2-8162-e73ce0a4c825.bosh": [
+    "10.0.8.5:1053"
+   ]
+  },
+  "remote_locators": [
+   "20cd56e5-c1fe-4f6e-8f6a-354ff2516f03.locator-server.seoul-services-subnet.service-instance-740fbd64-f250-45d2-8162-e73ce0a4c825.bosh[55221]"
+  ],
+  "trusted_sender_credentials": [
+   {
+    "password": "OUUJDi3eYfqEIMxfRldQ",
+    "username": "gateway_sender_9meHmbnMFvGDVKYRtAbpA"
+   }
+  ]
+ },
+ "urls": {
+  "gfsh": "https://cloudcache-740fbd64-f250-45d2-8162-e73ce0a4c825.sys.seoul.cf-app.com/gemfire/v1",
+  "management": "https://cloudcache-740fbd64-f250-45d2-8162-e73ce0a4c825.sys.seoul.cf-app.com/management/docs",
+  "management.experimental": "https://cloudcache-740fbd64-f250-45d2-8162-e73ce0a4c825.sys.seoul.cf-app.com/management/experimental",
+  "pulse": "https://cloudcache-740fbd64-f250-45d2-8162-e73ce0a4c825.sys.seoul.cf-app.com/pulse"
+ },
+ "users": [
+  {
+   "password": "iqiN05MzAaO52WtiMlHcQw",
+   "roles": [
+    "cluster_operator"
+   ],
+   "username": "cluster_operator_83ZGNx2UW0QfjSVOrW9w"
+  },
+  {
+   "password": "Sf37QgrP1ISjy3yT5kOv1A",
+   "roles": [
+    "developer"
+   ],
+   "username": "developer_bvLag6gQ9ThXk5MxK7YJw"
+  },
+  {
+   "password": "KeStZRpRwm0LtBqTecC0og",
+   "roles": [
+    "readonly"
+   ],
+   "username": "readonly_oYZFhTn83VHIq6gmORXGPg"
+  }
+ ],
+ "wan": {}
+}
+
+## Execute the bin/configure.sh script to deploy functions, create regions and indexes
+## You may need to modify the path for gfsh (to use the correct version of gfsh for your 
+## deployment).
+./bin/configure.sh
+
+

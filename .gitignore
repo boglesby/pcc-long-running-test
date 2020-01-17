@@ -9,7 +9,6 @@ build/
 build-eclipse/
 /tags
 out/
-setenv.sh
 
 .DS_store
 *.iml
